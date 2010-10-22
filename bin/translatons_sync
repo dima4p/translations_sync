@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+
+from = File.join(File.split(Gem.bin_path('translatons_sync')).first,
+                 '..', 'lib', 'tasks', '*.rake')
+to = File.expand_path('.', File.join('lib', 'tasks'))
+environment = File.expand_path('.', File.join('config', 'environment.rb'))
+
+if File.directory? to and File.exists? environment
+  FileUtils.cp Dir.glob(from), to
+  puts "Rake file are copied to #{to}"
+else
+  puts 'You must run it from within the rails directory'
+end
