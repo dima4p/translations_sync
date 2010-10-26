@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'ya2yaml'
 
 class TranslatonsSync
 
@@ -6,6 +7,34 @@ class TranslatonsSync
   DEFAULT_LIST = 'ru,en'
   EXCLUDE_LIST = ''
   TAIL = '=TODO'
+  PKORDER = {'zero' => 0, 'one' => 1, 'two' => 2, 'few' => 3, 'many' => 5, 'other' => 9}
+  PKLIST = PKORDER.keys
+  RE = Regexp.new ' \d(' + PKORDER.keys.join('|') + '):'
+
+  class << self
+    def to_yaml(hash)
+      translate_keys(hash).ya2yaml.gsub(RE, ' \1:')
+    end
+
+    private
+
+    def translate_keys(hash)
+      hash.each_pair do |key, v|
+        if v.is_a? Hash
+          if v.keys.sort == (v.keys & PKLIST).sort
+            new = {}
+            v.keys.each do |k|
+              new["#{PKORDER[k]}#{k.to_s}"] = v[k]
+            end
+            hash[key] = new
+          else
+            translate_keys v
+          end
+        end
+      end
+      hash
+    end
+  end
 
   def initialize(list = nil, exclude = nil)
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
@@ -53,7 +82,7 @@ class TranslatonsSync
       end
       @flat.each_pair do |key, val|
         (locales_with_missing - val.keys).each do |lang|
-          push_to_hash @missing[lang], key, val, true
+          push_to_hash @missing[lang], lang, key, val, true
         end
       end
       @missing.stringify_keys!
@@ -83,7 +112,7 @@ class TranslatonsSync
       end
       @flat.each_pair do |key, val|
         lang = val.keys.first
-        push_to_hash @singles[lang], key, val, false if val.size == 1
+        push_to_hash @singles[lang], lang, key, val, false if val.size == 1
       end
       @singles.stringify_keys!
     end
@@ -113,7 +142,7 @@ class TranslatonsSync
     dest[key][lang] = value
   end
 
-  def push_to_hash(hash, keys, val, missing)
+  def push_to_hash(hash, target, keys, val, missing)
     key = keys.pop
     h = hash
     keys.each do |k|
@@ -126,7 +155,7 @@ class TranslatonsSync
       end
       if val[lang].is_a? Hash
         h[key.to_s] = {}
-        @pluralize_keys[lang].each do |pkey|
+        @pluralize_keys[target].each do |pkey|
           h[key.to_s][pkey.to_s] = (val[lang][pkey] || val[lang][:other]) + TAIL
         end
       elsif val[lang].is_a? Array
