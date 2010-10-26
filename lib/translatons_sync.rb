@@ -151,7 +151,7 @@ class TranslatonsSync
     end
     if missing
       lang = @full_list.detect do |lang|
-        val[lang]
+        not val[lang].nil?
       end
       if val[lang].is_a? Hash
         h[key.to_s] = {}
