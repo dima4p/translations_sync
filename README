@@ -30,7 +30,7 @@ There are two rake tasks implemented in the plugin.
 1. rakde translatons:sync
 
 This task generates the files with missing translations in the directory
-config/locales. One file per a locale named missing_#{locale}.yml
+config/locales. One file per a locale is created with the name missing_#{locale}.yml
 Each file contains the text of one of the existing locales, namely the first one
 existing. The order to check is defined by the LIST parameter. This parameter
 can also be used to add a new locale.
@@ -41,7 +41,7 @@ translation.
 
 2. rake translatons:singles
 
-This task generates a single fiel config/locales/singles.yml that contains the
+This task generates a single file config/locales/singles.yml that contains the
 translations occuring only in one locale.
 
 
