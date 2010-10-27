@@ -156,7 +156,8 @@ class TranslatonsSync
       if val[lang].is_a? Hash
         h[key.to_s] = {}
         @pluralize_keys[target].each do |pkey|
-          h[key.to_s][pkey.to_s] = (val[lang][pkey] || val[lang][:other]) + TAIL
+          h[key.to_s][pkey.to_s] =
+            (val[lang][pkey] || val[lang][:many] || val[lang][:other]) + TAIL
         end
       elsif val[lang].is_a? Array
         h[key.to_s] = val[lang].map do |text|
