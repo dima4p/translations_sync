@@ -10,7 +10,7 @@ namespace :translatons do
     ts.missing.keys.sort.each do |lang|
       filename = File.join Rails.root, 'config', 'locales', "#{name}_#{lang}.yml"
       print filename + ' ...  '
-      File.open(filename, "w") do |file|
+      File.open(filename, "a") do |file|
         file.write(TranslatonsSync.to_yaml({lang => ts.missing[lang]}))
       end
       puts 'Done'
