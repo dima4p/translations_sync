@@ -3,11 +3,12 @@ namespace :translatons do
 
   PARAMS = '. LIST=locales,to,use EXCLUDE=locales,to,ignore'
 
-  desc "Synchronizes the existing translations" + PARAMS
+  desc "Synchronizes the existing translations" + PARAMS +  ' NAME=file_name_prefix'
   task :sync => :environment do
     ts = TranslatonsSync.new ENV['LIST'], ENV['EXCLUDE']
+    name = ENV['NAME'] || 'missing'
     ts.missing.keys.sort.each do |lang|
-      filename = File.join Rails.root, 'config', 'locales', "missing_#{lang}.yml"
+      filename = File.join Rails.root, 'config', 'locales', "#{name}_#{lang}.yml"
       print filename + ' ...  '
       File.open(filename, "w") do |file|
         file.write(TranslatonsSync.to_yaml({lang => ts.missing[lang]}))
