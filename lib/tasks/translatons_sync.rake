@@ -15,7 +15,7 @@ namespace :translatons do
       end
       puts 'Done'
     end
-    puts "All is synchronized" if missing.size == 0
+    puts "All is synchronized" if ts.missing.size == 0
   end
 
   desc "Detects the translations existing only in one locale" + PARAMS
