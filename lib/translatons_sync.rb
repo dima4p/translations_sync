@@ -164,7 +164,12 @@ class TranslatonsSync
           text.is_a?(String) ? (text + TAIL) : text
         end
       else
-        h[key.to_s] = val[lang].to_s + TAIL
+        begin
+          h[key.to_s] = val[lang].to_s + TAIL
+        rescue
+          puts %Q(Can not assign to the key "#{key}")
+          raise
+        end
       end
     else
       value = val.values.first
