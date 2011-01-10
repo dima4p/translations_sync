@@ -10,10 +10,18 @@ namespace :translatons do
     ts.missing.keys.sort.each do |lang|
       filename = File.join Rails.root, 'config', 'locales', "#{name}_#{lang}.yml"
       print filename + ' ...  '
-      File.open(filename, "a") do |file|
-        file.write(TranslatonsSync.to_yaml({lang => ts.missing[lang]}))
+      if File.exist? filename
+        hash = YAML::load(File.open(filename))
+        File.open(filename, "w") do |file|
+          file.write(TranslatonsSync.to_yaml(hash.deep_merge!(ts.missing.slice(lang))))
+        end
+        puts 'updated'
+      else
+        File.open(filename, "w") do |file|
+          file.write(TranslatonsSync.to_yaml(ts.missing.slice lang))
+        end
+        puts 'created'
       end
-      puts 'Done'
     end
     puts "All is synchronized" if ts.missing.size == 0
   end
@@ -28,7 +36,7 @@ namespace :translatons do
       end
       puts filename + ' <= ' + ts.singles.keys.join(', ')
     else
-      puts 'No singels are found'
+      puts 'No singles were found'
     end
   end
 
