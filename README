@@ -18,7 +18,7 @@ Installation
   rails plugin install http://github.com/dima4p/translatons_sync/
 
 2. As gem
-  sudo gem install translatons_sync -r http://github.com/dima4p/translatons_sync/
+  sudo gem install translatons_sync
   translatons_sync
 
 
@@ -40,11 +40,27 @@ calculation of the missing translations but it's value may be used in the sample
 translation.
 The parameter NAME allows you to write the missing translations to the specified
 files instead of default 'missing'.
+The parameter SOURCE allows you to restrict the synchronization to be done within
+only one file name. Only the files for all the locales that meet the given name
+will be loaded for the synchronization.
+The parameter IN sets both NAME and SOURCE to its value.
 
 2. rake translatons:singles
 
 This task generates a single file config/locales/singles.yml that contains the
 translations occuring only in one locale.
 
+3. rake translations:move KEY=key.to.move TO=where.to.move
 
-Copyright (c) 2010 Dmitri Koulikoff, released under the MIT license
+This task moves the given KEY under the TO. Please note, that the TO
+must not have the last part of the KEY at the end.
+You can use all the parameters available for the translatons:sync task with the default
+value for the NAME equal to 'moved'.
+In order to overwrite the existing file both NAME and SOURCE should be given
+with the same value. For that there is the parameter IN that sets both values.
+
+
+So far it works only for rails applications. Suggestions for others are welcome.
+
+
+Copyright (c) 2010-2011 Dmitri Koulikoff, released under the MIT license

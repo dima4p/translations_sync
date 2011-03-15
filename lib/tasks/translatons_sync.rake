@@ -5,8 +5,9 @@ namespace :translatons do
 
   desc "Synchronizes the existing translations" + PARAMS +  ' NAME=file_name_prefix'
   task :sync => :environment do
-    ts = TranslatonsSync.new ENV['LIST'], ENV['EXCLUDE']
-    name = ENV['NAME'] || 'missing'
+    source = ENV['SOURCE'] || ENV['IN']
+    ts = TranslatonsSync.new ENV['LIST'], ENV['EXCLUDE'], source
+    name = ENV['NAME'] || ENV['IN'] || 'missing'
     ts.missing.keys.sort.each do |lang|
       filename = File.join Rails.root, 'config', 'locales', "#{name}_#{lang}.yml"
       print filename + ' ...  '
@@ -37,6 +38,31 @@ namespace :translatons do
       puts filename + ' <= ' + ts.singles.keys.join(', ')
     else
       puts 'No singles were found'
+    end
+  end
+
+  desc "Moves the key in the translations" + PARAMS + " KEY=key.to.move TO=where.to.move IN=filespec"
+  task :move => :environment do
+    source = ENV['SOURCE'] || ENV['IN']
+    name = ENV['NAME'] || ENV['IN'] || 'moved'
+    key = ENV['KEY'] or raise "Parameter KEY must be given"
+    ts = TranslatonsSync.new ENV['LIST'], ENV['EXCLUDE'], source
+    if ts.move key, ENV['TO']
+      ts.moved.keys.sort.each do |lang|
+        filename = File.join Rails.root, 'config', 'locales', "#{name}_#{lang}.yml"
+        print filename + ' ...  '
+        if File.exist? filename
+          status = 'updated'
+        else
+          status = 'created'
+        end
+        File.open(filename, "w") do |file|
+          file.write(TranslatonsSync.to_yaml(ts.moved.slice lang))
+        end
+        puts status
+      end
+    else
+      puts "The key \"#{key}\" was not found"
     end
   end
 

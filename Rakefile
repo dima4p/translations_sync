@@ -1,12 +1,12 @@
 require 'rake/rdoctask'
 require 'rubygems'
 require 'rake/gempackagetask'
-require 'spec/rake/spectask'
+# require 'spec/rake/spectask'
 require 'rubygems/specification'
 require 'date'
 
 GEM = "translatons_sync"
-GEM_VERSION = "0.0.1"
+GEM_VERSION = "0.1.1"
 AUTHOR = "Dmitri Koulikoff"
 EMAIL = "koulikoff@gmail.com"
 HOMEPAGE = "http://github.com/dima4p/translatons_sync/"
@@ -47,12 +47,12 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-task :default => :spec
-desc "Default: Run specs"
-Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
-  t.spec_opts = %w(-fs --color)
-end
+# task :default => :spec
+# desc "Default: Run specs"
+# Spec::Rake::SpecTask.new do |t|
+#   t.spec_files = FileList['spec/**/*_spec.rb']
+#   t.spec_opts = %w(-fs --color)
+# end
 
 desc "install the gem locally"
 task :install => [:package] do

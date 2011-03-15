@@ -1,5 +1,15 @@
 # encoding: utf-8
 require 'ya2yaml'
+require 'i18n'
+
+class Hash
+  def stringify_keys!
+    keys.each do |key|
+      self[key.to_s] = delete(key)
+    end
+    self
+  end
+end
 
 class TranslatonsSync
 
@@ -36,9 +46,21 @@ class TranslatonsSync
     end
   end
 
-  def initialize(list = nil, exclude = nil)
+  def initialize(list = nil, exclude = nil, source = nil)
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     @translations = I18n.backend.send :translations
+    if source
+      re = Regexp.new "#{Regexp.escape source}_[^.]+\\.(yml|rb)\\Z"
+      I18n.load_path.reject! do |path|
+        path !~ re
+      end
+      @translations.each do |key, hash|
+        hash.keys.each do |k|
+          hash.delete(k) unless k == :pluralize
+        end
+      end
+      I18n.backend.send(:init_translations)
+    end
     @full_list = ((list || DEFAULT_LIST).split(',').map(&:to_sym) + translations.keys).uniq
     exclude = (exclude || EXCLUDE_LIST).split(',').map(&:to_sym)
     @list = @full_list - exclude
@@ -82,7 +104,7 @@ class TranslatonsSync
       end
       @flat.each_pair do |key, val|
         (locales_with_missing - val.keys).each do |lang|
-          push_to_hash @missing[lang], lang, key, val, true
+          push_to_hash @missing[lang], lang, key, val, :missing
         end
       end
       @missing.stringify_keys!
@@ -112,11 +134,47 @@ class TranslatonsSync
       end
       @flat.each_pair do |key, val|
         lang = val.keys.first
-        push_to_hash @singles[lang], lang, key, val, false if val.size == 1
+        push_to_hash @singles[lang], lang, key, val, :singles if val.size == 1
       end
       @singles.stringify_keys!
     end
     @singles
+  end
+
+  def move(key, destination)
+    key = key.split('.').map(&:to_sym)
+    key_length = key.length - 1
+    return false if key_length < 0
+    destination ||= ''
+    destination = destination.split('.').map(&:to_sym)
+    result = false
+    @flat.each_pair do |array, val|
+      if array[0, key_length + 1] == key
+        array[0, key_length] = destination
+        result = true
+      end
+    end
+    @moved = nil
+    result
+  end
+
+  def moved
+    unless @moved
+      @moved = {}
+      @list.each do |lang|
+        @moved[lang] = {}
+      end
+      @flat.each_pair do |key, val|
+        val.keys.each do |lang|
+          push_to_hash @moved[lang], lang, key, val, :moved
+        end
+      end
+      @moved.keys.each do |key|
+        @moved.delete(key) if @moved[key].size == 0
+      end
+      @moved.stringify_keys!
+    end
+    @moved
   end
 
   private
@@ -142,14 +200,15 @@ class TranslatonsSync
     dest[key][lang] = value
   end
 
-  def push_to_hash(hash, target, keys, val, missing)
+  def push_to_hash(hash, target, keys, val, mode)
     key = keys.pop
     h = hash
     keys.each do |k|
       h[k.to_s] = {} unless h[k.to_s]
       h = h[k.to_s]
     end
-    if missing
+    case mode
+    when :missing
       lang = @full_list.detect do |lang|
         not val[lang].nil?
       end
@@ -171,8 +230,12 @@ class TranslatonsSync
           raise
         end
       end
-    else
+    when :singles
       value = val.values.first
+      value.stringify_keys! if value.is_a? Hash
+      h[key.to_s] = value
+    when :moved
+      value = val[target] or raise 'The translations are not synchronized'
       value.stringify_keys! if value.is_a? Hash
       h[key.to_s] = value
     end
