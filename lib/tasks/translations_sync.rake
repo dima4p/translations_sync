@@ -1,12 +1,12 @@
 # encoding: utf-8
-namespace :translatons do
+namespace :translations do
 
   PARAMS = '. LIST=locales,to,use EXCLUDE=locales,to,ignore'
 
   desc "Synchronizes the existing translations" + PARAMS +  ' NAME=file_name_prefix'
   task :sync => :environment do
     source = ENV['SOURCE'] || ENV['IN']
-    ts = TranslatonsSync.new ENV['LIST'], ENV['EXCLUDE'], source
+    ts = TranslationsSync.new ENV['LIST'], ENV['EXCLUDE'], source
     name = ENV['NAME'] || ENV['IN'] || 'missing'
     ts.missing.keys.sort.each do |lang|
       filename = File.join Rails.root, 'config', 'locales', "#{name}_#{lang}.yml"
@@ -14,12 +14,12 @@ namespace :translatons do
       if File.exist? filename
         hash = YAML::load(File.open(filename))
         File.open(filename, "w") do |file|
-          file.write(TranslatonsSync.to_yaml(hash.deep_merge!(ts.missing.slice(lang))))
+          file.write(TranslationsSync.to_yaml(hash.deep_merge!(ts.missing.slice(lang))))
         end
         puts 'updated'
       else
         File.open(filename, "w") do |file|
-          file.write(TranslatonsSync.to_yaml(ts.missing.slice lang))
+          file.write(TranslationsSync.to_yaml(ts.missing.slice lang))
         end
         puts 'created'
       end
@@ -29,11 +29,11 @@ namespace :translatons do
 
   desc "Detects the translations existing only in one locale" + PARAMS
   task :singles => :environment do
-    ts = TranslatonsSync.new ENV['LIST'], ENV['EXCLUDE']
+    ts = TranslationsSync.new ENV['LIST'], ENV['EXCLUDE']
     filename = File.join Rails.root, 'config', 'locales', "singles.yml"
     if ts.singles.size > 0
       File.open(filename, "w") do |file|
-        file.write(TranslatonsSync.to_yaml ts.singles)
+        file.write(TranslationsSync.to_yaml ts.singles)
       end
       puts filename + ' <= ' + ts.singles.keys.join(', ')
     else
@@ -46,7 +46,7 @@ namespace :translatons do
     source = ENV['SOURCE'] || ENV['IN']
     name = ENV['NAME'] || ENV['IN'] || 'moved'
     key = ENV['KEY'] or raise "Parameter KEY must be given"
-    ts = TranslatonsSync.new ENV['LIST'], ENV['EXCLUDE'], source
+    ts = TranslationsSync.new ENV['LIST'], ENV['EXCLUDE'], source
     if ts.move key, ENV['TO']
       ts.moved.keys.sort.each do |lang|
         filename = File.join Rails.root, 'config', 'locales', "#{name}_#{lang}.yml"
@@ -57,7 +57,7 @@ namespace :translatons do
           status = 'created'
         end
         File.open(filename, "w") do |file|
-          file.write(TranslatonsSync.to_yaml(ts.moved.slice lang))
+          file.write(TranslationsSync.to_yaml(ts.moved.slice lang))
         end
         puts status
       end

@@ -11,7 +11,7 @@ class Hash
   end
 end
 
-class TranslatonsSync
+class TranslationsSync
 
   attr_accessor :translations, :list
   DEFAULT_LIST = 'ru,en'

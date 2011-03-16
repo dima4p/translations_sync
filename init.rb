@@ -1,2 +1,2 @@
 # Include hook code here
-require 'translatons_sync'
+require 'translations_sync'

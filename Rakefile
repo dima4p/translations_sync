@@ -5,11 +5,11 @@ require 'rake/gempackagetask'
 require 'rubygems/specification'
 require 'date'
 
-GEM = "translatons_sync"
+GEM = "translations_sync"
 GEM_VERSION = "0.1.1"
 AUTHOR = "Dmitri Koulikoff"
 EMAIL = "koulikoff@gmail.com"
-HOMEPAGE = "http://github.com/dima4p/translatons_sync/"
+HOMEPAGE = "http://github.com/dima4p/translations_sync/"
 SUMMARY = "Synchronizes the different locales represeinted in yaml, in particular, for I18n"
 
 spec = Gem::Specification.new do |s|
@@ -26,18 +26,18 @@ spec = Gem::Specification.new do |s|
 
    s.add_dependency "ya2yaml"
 
-  s.executables = 'translatons_sync'
-  s.default_executable = 'translatons_sync'
+  s.executables = 'translations_sync'
+  s.default_executable = 'translations_sync'
   s.require_path = 'lib'
   s.files = %w(MIT-LICENSE README Rakefile init.rb) +
     Dir.glob("{bin,lib,spec}/**/*") -
     Dir.glob("{bin,lib,spec}/**/*~")
 end
 
-desc 'Generate documentation for the translatons_sync plugin.'
+desc 'Generate documentation for the translations_sync plugin.'
 Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = 'TranslatonsSync'
+  rdoc.title    = 'TranslationsSync'
   rdoc.options << '--line-numbers' << '--inline-source'
   rdoc.rdoc_files.include('README')
   rdoc.rdoc_files.include('lib/**/*.rb')

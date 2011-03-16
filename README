@@ -1,5 +1,5 @@
-TranslatonsSync
-===============
+TranslationsSync
+================
 
 This plugin is intended to help the developer to synchronize the different locales for
 the project that uses yaml based locales, in particular, I18n.
@@ -15,11 +15,11 @@ Installation
 ============
 
 1. As plugin
-  rails plugin install http://github.com/dima4p/translatons_sync/
+  rails plugin install http://github.com/dima4p/translations_sync/
 
 2. As gem
-  sudo gem install translatons_sync
-  translatons_sync
+  sudo gem install translations_sync
+  translations_sync
 
 
 Description
@@ -27,7 +27,7 @@ Description
 
 There are two rake tasks implemented in the plugin.
 
-1. rake translatons:sync
+1. rake translations:sync
 
 This task generates the files with missing translations in the directory
 config/locales. One file per a locale is created with the name missing_#{locale}.yml
@@ -45,7 +45,7 @@ only one file name. Only the files for all the locales that meet the given name
 will be loaded for the synchronization.
 The parameter IN sets both NAME and SOURCE to its value.
 
-2. rake translatons:singles
+2. rake translations:singles
 
 This task generates a single file config/locales/singles.yml that contains the
 translations occuring only in one locale.
@@ -54,7 +54,7 @@ translations occuring only in one locale.
 
 This task moves the given KEY under the TO. Please note, that the TO
 must not have the last part of the KEY at the end.
-You can use all the parameters available for the translatons:sync task with the default
+You can use all the parameters available for the translations:sync task with the default
 value for the NAME equal to 'moved'.
 In order to overwrite the existing file both NAME and SOURCE should be given
 with the same value. For that there is the parameter IN that sets both values.

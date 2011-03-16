@@ -1,19 +1,19 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{translatons_sync}
+  s.name = %q{translations_sync}
   s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Dmitri Koulikoff"]
   s.date = %q{2011-03-15}
-  s.default_executable = %q{translatons_sync}
+  s.default_executable = %q{translations_sync}
   s.description = %q{Synchronizes the different locales represeinted in yaml, in particular, for I18n}
   s.email = %q{koulikoff@gmail.com}
-  s.executables = ["translatons_sync"]
+  s.executables = ["translations_sync"]
   s.extra_rdoc_files = ["README", "MIT-LICENSE"]
-  s.files = ["MIT-LICENSE", "README", "Rakefile", "init.rb", "bin/translatons_sync", "lib/tasks", "lib/tasks/translatons_sync.rake", "lib/translatons_sync.rb", "spec/spec_helper.rb"]
-  s.homepage = %q{http://github.com/dima4p/translatons_sync/}
+  s.files = ["MIT-LICENSE", "README", "Rakefile", "init.rb", "bin/translations_sync", "lib/tasks", "lib/tasks/translations_sync.rake", "lib/translations_sync.rb", "spec/spec_helper.rb"]
+  s.homepage = %q{http://github.com/dima4p/translations_sync/}
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.6.2}
   s.summary = %q{Synchronizes the different locales represeinted in yaml, in particular, for I18n}
