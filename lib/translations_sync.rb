@@ -143,6 +143,7 @@ class TranslationsSync
 
   def move(key, destination)
     key = key.split('.').map(&:to_sym)
+    key_length = key.length
     return false if key_length < 1
     destination ||= ''
     destination = destination.split('.').map(&:to_sym)
