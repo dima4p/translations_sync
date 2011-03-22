@@ -6,7 +6,7 @@ require 'rubygems/specification'
 require 'date'
 
 GEM = "translations_sync"
-GEM_VERSION = "0.2.1"
+GEM_VERSION = "0.2.2"
 AUTHOR = "Dmitri Koulikoff"
 EMAIL = "koulikoff@gmail.com"
 HOMEPAGE = "http://github.com/dima4p/translations_sync/"
@@ -29,7 +29,7 @@ spec = Gem::Specification.new do |s|
   s.executables = 'translations_sync'
   s.default_executable = 'translations_sync'
   s.require_path = 'lib'
-  s.files = %w(MIT-LICENSE README Rakefile init.rb) +
+  s.files = %w(MIT-LICENSE README Rakefile Changelog init.rb) +
     Dir.glob("{bin,lib,spec}/**/*") -
     Dir.glob("{bin,lib,spec}/**/*~")
 end
