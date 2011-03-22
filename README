@@ -52,8 +52,7 @@ translations occuring only in one locale.
 
 3. rake translations:move KEY=key.to.move TO=where.to.move
 
-This task moves the given KEY under the TO. Please note, that the TO
-must not have the last part of the KEY at the end.
+This task moves the content of given KEY under the TO.
 You can use all the parameters available for the translations:sync task with the default
 value for the NAME equal to 'moved'.
 In order to overwrite the existing file both NAME and SOURCE should be given

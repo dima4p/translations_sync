@@ -143,13 +143,13 @@ class TranslationsSync
 
   def move(key, destination)
     key = key.split('.').map(&:to_sym)
-    key_length = key.length - 1
-    return false if key_length < 0
+    return false if key_length < 1
     destination ||= ''
     destination = destination.split('.').map(&:to_sym)
+    destination << key.last if destination.size == 0
     result = false
     @flat.each_pair do |array, val|
-      if array[0, key_length + 1] == key
+      if array[0, key_length] == key
         array[0, key_length] = destination
         result = true
       end
