@@ -178,6 +178,20 @@ class TranslationsSync
     @moved
   end
 
+  def remove(key)
+    key = key.split('.').map(&:to_sym)
+    key_length = key.length
+    result = false
+    puts @flat.keys.select{|array| array[0] == :clients}.map(&:second).inspect
+    @flat.reject! do |array, val|
+      r = array[0, key_length] == key
+      result ||= r
+      r
+    end
+    @moved = nil
+    result
+  end
+
   private
 
   def flatten_keys(lang, src, dest = {}, prefix = [])

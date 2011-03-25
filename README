@@ -55,9 +55,10 @@ translations occuring only in one locale.
 This task moves the content of given KEY under the TO.
 You can use all the parameters available for the translations:sync task with the default
 value for the NAME equal to 'moved'.
-In order to overwrite the existing file both NAME and SOURCE should be given
-with the same value. For that there is the parameter IN that sets both values.
 
+4. rake translations:remove KEY=key.to.remove
+
+This task removes the key from the translations. NAME defalts to 'removed' here.
 
 So far it works only for rails applications. Suggestions for others are welcome.
 

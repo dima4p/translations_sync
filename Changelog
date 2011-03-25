@@ -1,3 +1,6 @@
+2011-03-25 v.0.2.4
+* Action translatons:remove added
+
 2011-03-22 v. 0.2.3
 * translatons:move does not keep the last key of KEY parameter. This gives the ability to rename the last key.
 

@@ -3,10 +3,31 @@ namespace :translations do
 
   PARAMS = '. LIST=locales,to,use EXCLUDE=locales,to,ignore'
 
+  def get_ts(skip_source = false)
+    source = skip_source ? nil : ENV['SOURCE'] || ENV['IN']
+    TranslationsSync.new ENV['LIST'], ENV['EXCLUDE'], source
+  end
+
+  def save_files(translations, default_name)
+    name = ENV['NAME'] || ENV['IN'] || default_name
+    translations.keys.sort.each do |lang|
+      filename = File.join Rails.root, 'config', 'locales', "#{name}_#{lang}.yml"
+      print filename + ' ...  '
+      if File.exist? filename
+        status = 'updated'
+      else
+        status = 'created'
+      end
+      File.open(filename, "w") do |file|
+        file.write(TranslationsSync.to_yaml(translations.slice lang))
+      end
+      puts status
+    end
+  end
+
   desc "Synchronizes the existing translations" + PARAMS +  ' NAME=file_name_prefix'
   task :sync => :environment do
-    source = ENV['SOURCE'] || ENV['IN']
-    ts = TranslationsSync.new ENV['LIST'], ENV['EXCLUDE'], source
+    ts = get_ts
     name = ENV['NAME'] || ENV['IN'] || 'missing'
     ts.missing.keys.sort.each do |lang|
       filename = File.join Rails.root, 'config', 'locales', "#{name}_#{lang}.yml"
@@ -29,7 +50,7 @@ namespace :translations do
 
   desc "Detects the translations existing only in one locale" + PARAMS
   task :singles => :environment do
-    ts = TranslationsSync.new ENV['LIST'], ENV['EXCLUDE']
+    ts = get_ts false
     filename = File.join Rails.root, 'config', 'locales', "singles.yml"
     if ts.singles.size > 0
       File.open(filename, "w") do |file|
@@ -43,24 +64,21 @@ namespace :translations do
 
   desc "Moves the key in the translations" + PARAMS + " KEY=key.to.move TO=where.to.move IN=filespec"
   task :move => :environment do
-    source = ENV['SOURCE'] || ENV['IN']
-    name = ENV['NAME'] || ENV['IN'] || 'moved'
     key = ENV['KEY'] or raise "Parameter KEY must be given"
-    ts = TranslationsSync.new ENV['LIST'], ENV['EXCLUDE'], source
+    ts = get_ts
     if ts.move key, ENV['TO']
-      ts.moved.keys.sort.each do |lang|
-        filename = File.join Rails.root, 'config', 'locales', "#{name}_#{lang}.yml"
-        print filename + ' ...  '
-        if File.exist? filename
-          status = 'updated'
-        else
-          status = 'created'
-        end
-        File.open(filename, "w") do |file|
-          file.write(TranslationsSync.to_yaml(ts.moved.slice lang))
-        end
-        puts status
-      end
+      save_files ts.moved, 'moved'
+    else
+      puts "The key \"#{key}\" was not found"
+    end
+  end
+
+  desc "Removes the key from the translations" + PARAMS + " KEY=key.to.move IN=filespec"
+  task :remove => :environment do
+    key = ENV['KEY'] or raise "Parameter KEY must be given"
+    ts = get_ts
+    if ts.remove key
+      save_files ts.moved, 'removed'
     else
       puts "The key \"#{key}\" was not found"
     end
