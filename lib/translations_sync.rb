@@ -50,7 +50,7 @@ class TranslationsSync
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     @translations = I18n.backend.send :translations
     if source
-      re = Regexp.new "#{Regexp.escape source}_[a-z]{2}(-[A-Z]{2})?\\.(yml|rb)\\Z"
+      re = Regexp.new "\\/#{Regexp.escape source}_[a-z]{2}(-[A-Z]{2})?\\.(yml|rb)\\Z"
       I18n.load_path.reject! do |path|
         path !~ re
       end
