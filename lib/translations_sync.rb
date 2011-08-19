@@ -68,13 +68,13 @@ class TranslationsSync
     @list.each do |lang|
       flatten_keys(lang, translations[lang] || {}, @flat)
     end
-    @flat.delete([:pluralize]) # we do not need this proc if it exists
     rules_key = %w[i18n.plural.rule pluralize].detect do |rule|
       @list.detect do |lang|
         locale_pluralize = I18n.backend.send(:lookup, lang, rule) and
           locale_pluralize.respond_to?(:call)
       end
     end
+    @flat.delete(rules_key.split('.').map(&:to_sym)) # we do not need this proc if it exists
     @pluralize_keys = @list.inject({}) do |acc, lang|
       acc[lang] = if locale_pluralize = I18n.backend.send(:lookup, lang, rules_key) and
           locale_pluralize.respond_to?(:call)
