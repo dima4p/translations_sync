@@ -1,4 +1,7 @@
-2012-09-19 v.0.3.1
+2012-09-17 v.0.4.0
+* Bugfix with proper calculation of count keys + transliteration screening
+
+2012-09-16 v.0.3.1
 * Rakfile should not be copied if using rails. Do not forget to remove the old one!
 
 2011-08-19 v.0.3.0

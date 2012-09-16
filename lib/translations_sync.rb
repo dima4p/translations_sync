@@ -56,35 +56,19 @@ class TranslationsSync
 
   def initialize(list = nil, exclude = nil, source = nil)
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
-    @translations = I18n.backend.send :translations
-    if source
-      re = Regexp.new "\\/#{Regexp.escape source}_[a-z]{2}(-[A-Z]{2})?\\.(yml|rb)\\Z"
-      I18n.load_path.reject! do |path|
-        path !~ re
-      end
-      @translations.each do |key, hash|
-        hash.keys.each do |k|
-          hash.delete(k) unless k == :pluralize
-        end
-      end
-      I18n.backend.send(:init_translations)
-    end
+    translations = I18n.backend.send :translations
     @full_list = ((list || DEFAULT_LIST).split(',').map(&:to_sym) + translations.keys).uniq
     exclude = (exclude || EXCLUDE_LIST).split(',').map(&:to_sym)
     @list = @full_list - exclude
-    @flat = {}
-    @list.each do |lang|
-      flatten_keys(lang, translations[lang] || {}, @flat)
-    end
     rules_key = %w[i18n.plural.rule pluralize].detect do |rule|
       @list.detect do |lang|
         locale_pluralize = I18n.backend.send(:lookup, lang, rule) and
           locale_pluralize.respond_to?(:call)
       end
     end
-    @flat.delete(rules_key.split('.').map(&:to_sym)) # we do not need this proc if it exists
     @pluralize_keys = @list.inject({}) do |acc, lang|
-      acc[lang] = if locale_pluralize = I18n.backend.send(:lookup, lang, rules_key) and
+      acc[lang] = if rules_key and
+          locale_pluralize = I18n.backend.send(:lookup, lang, rules_key) and
           locale_pluralize.respond_to?(:call)
         ((0..100).map do |n|
           locale_pluralize.call n
@@ -93,6 +77,29 @@ class TranslationsSync
         [:one, :other]
       end
       acc
+    end
+
+    if source
+      re = Regexp.new "\\/#{Regexp.escape source}_[a-z]{2}(-[A-Z]{2})?\\.(yml|rb)\\Z"
+      I18n.load_path.reject! do |path|
+        path !~ re
+      end
+      translations.each do |key, hash|
+        hash.keys.each do |k|
+          hash.delete(k) unless k == :pluralize
+        end
+      end
+      I18n.backend.send(:init_translations)
+    end
+
+    @flat = {}
+    @list.each do |lang|
+      flatten_keys(lang, translations[lang] || {}, @flat)
+    end
+    @flat.delete(rules_key.split('.').map(&:to_sym)) # we do not need this proc if it exists
+    transliterate = [:i18n, :transliterate]
+    @flat.keys.select do |key|
+      @flat.delete(key) if key[0..1] == transliterate
     end
   end
 

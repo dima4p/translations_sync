@@ -6,11 +6,11 @@ require 'rubygems/specification'
 require 'date'
 
 GEM = "translations_sync"
-GEM_VERSION = "0.3.1"
+GEM_VERSION = "0.4.0"
 AUTHOR = "Dmitri Koulikoff"
 EMAIL = "koulikoff@gmail.com"
 HOMEPAGE = "http://github.com/dima4p/translations_sync/"
-SUMMARY = "Synchronizes the different locales represeinted in yaml, in particular, for I18n"
+SUMMARY = "Synchronizes the different locales represeinted in yaml for I18n"
 
 spec = Gem::Specification.new do |s|
   s.name = GEM
