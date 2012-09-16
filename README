@@ -17,9 +17,17 @@ Installation
 1. As plugin
   rails plugin install http://github.com/dima4p/translations_sync/
 
-2. As gem
-  sudo gem install translations_sync
-  translations_sync
+2. As gem: add to your Gemfile
+  gem 'translations_sync'
+
+3. If you are using the gem outside rails, execute the following command to copy
+the rake file into your project's directory lib/tasks.
+
+  bundle exec translations_sync
+
+Or, if you keep your rake tesks in other place, you can give the argument with the proper path
+
+  bundle exec translations_sync path/to/directory
 
 
 Description

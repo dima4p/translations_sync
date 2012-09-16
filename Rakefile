@@ -1,4 +1,4 @@
-require 'rake/rdoctask'
+require 'rdoc/task'
 require 'rubygems'
 require 'rake/gempackagetask'
 # require 'spec/rake/spectask'
@@ -6,7 +6,7 @@ require 'rubygems/specification'
 require 'date'
 
 GEM = "translations_sync"
-GEM_VERSION = "0.3.0"
+GEM_VERSION = "0.3.1"
 AUTHOR = "Dmitri Koulikoff"
 EMAIL = "koulikoff@gmail.com"
 HOMEPAGE = "http://github.com/dima4p/translations_sync/"

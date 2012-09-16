@@ -11,6 +11,14 @@ class Hash
   end
 end
 
+if defined?(Rails)
+  class Railtie < Rails::Railtie
+    rake_tasks do
+      load 'tasks/translations_sync.rake'
+    end
+  end
+end
+
 class TranslationsSync
 
   attr_accessor :translations, :list
