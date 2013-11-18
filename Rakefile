@@ -1,12 +1,12 @@
 require 'rdoc/task'
 require 'rubygems'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 # require 'spec/rake/spectask'
 require 'rubygems/specification'
 require 'date'
 
 GEM = "translations_sync"
-GEM_VERSION = "0.4.0"
+GEM_VERSION = "0.4.1"
 AUTHOR = "Dmitri Koulikoff"
 EMAIL = "koulikoff@gmail.com"
 HOMEPAGE = "http://github.com/dima4p/translations_sync/"
@@ -24,7 +24,7 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
 
-   s.add_dependency "ya2yaml"
+  s.add_dependency "ya2yaml"
 
   s.executables = 'translations_sync'
   s.default_executable = 'translations_sync'
@@ -43,7 +43,7 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
-Rake::GemPackageTask.new(spec) do |pkg|
+Gem::PackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 

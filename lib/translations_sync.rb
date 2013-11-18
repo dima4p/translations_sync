@@ -96,7 +96,7 @@ class TranslationsSync
     @list.each do |lang|
       flatten_keys(lang, translations[lang] || {}, @flat)
     end
-    @flat.delete(rules_key.split('.').map(&:to_sym)) # we do not need this proc if it exists
+    @flat.delete(rules_key.split('.').map(&:to_sym)) if rules_key # we do not need this proc if it exists
     transliterate = [:i18n, :transliterate]
     @flat.keys.select do |key|
       @flat.delete(key) if key[0..1] == transliterate
