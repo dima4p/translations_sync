@@ -1,4 +1,7 @@
-2013-10-18 v.0.4.1
+2013-11-21 v.0.4.2
+* Bugfix when key :other is missing in the translaton
+
+2013-11-18 v.0.4.1
 * Bugfix with exception when no rules_key is present
 
 2012-09-17 v.0.4.0

@@ -52,7 +52,7 @@ class TranslationsSync
       end
       hash
     end
-  end
+  end   # class << self
 
   def initialize(list = nil, exclude = nil, source = nil)
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
@@ -101,7 +101,7 @@ class TranslationsSync
     @flat.keys.select do |key|
       @flat.delete(key) if key[0..1] == transliterate
     end
-  end
+  end   # initialize
 
   def locales_with_missing
     unless @locales_with_missing
@@ -218,7 +218,7 @@ class TranslationsSync
     src.each_pair do |key, value|
       new = prefix.dup << key
       if value.is_a? Hash
-        if value.keys.include? :other
+        if (value.keys & [:one, :other]).size > 0
           insert_translation(dest, new, lang, value)
         else
           flatten_keys lang, value, dest, new
