@@ -1,3 +1,6 @@
+2014-05-20 v.0.4.3
+* Dot can be used as separator between name and locale instead of underscore
+
 2013-11-21 v.0.4.2
 * Bugfix when key :other is missing in the translaton
 

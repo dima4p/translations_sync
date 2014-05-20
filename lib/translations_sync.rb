@@ -80,10 +80,11 @@ class TranslationsSync
     end
 
     if source
-      re = Regexp.new "\\/#{Regexp.escape source}_[a-z]{2}(-[A-Z]{2})?\\.(yml|rb)\\Z"
+      re = Regexp.new "\\/#{Regexp.escape source}(_|.)[a-z]{2}(-[A-Z]{2})?\\.(yml|rb)\\Z"
       I18n.load_path.reject! do |path|
         path !~ re
       end
+      @separator = $1 == '.' ? '.' : '_'
       translations.each do |key, hash|
         hash.keys.each do |k|
           hash.delete(k) unless k == :pluralize
@@ -210,6 +211,10 @@ class TranslationsSync
     end
     @moved = nil
     result
+  end
+
+  def separator
+    @separator || '_'
   end
 
   private

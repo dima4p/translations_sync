@@ -8,10 +8,10 @@ namespace :translations do
     TranslationsSync.new ENV['LIST'], ENV['EXCLUDE'], source
   end
 
-  def save_files(translations, default_name)
+  def save_files(translations, default_name, separator = '_')
     name = ENV['NAME'] || ENV['IN'] || default_name
     translations.keys.sort.each do |lang|
-      filename = File.join Rails.root, 'config', 'locales', "#{name}_#{lang}.yml"
+      filename = File.join Rails.root, 'config', 'locales', "#{name}#{separator}#{lang}.yml"
       print filename + ' ...  '
       if File.exist? filename
         status = 'updated'
@@ -30,7 +30,8 @@ namespace :translations do
     ts = get_ts
     name = ENV['NAME'] || ENV['IN'] || 'missing'
     ts.missing.keys.sort.each do |lang|
-      filename = File.join Rails.root, 'config', 'locales', "#{name}_#{lang}.yml"
+      filename = File.join Rails.root, 'config', 'locales',
+                           "#{name}#{ts.separator}#{lang}.yml"
       print filename + ' ...  '
       if File.exist? filename
         hash = YAML::load(File.open(filename))
@@ -67,7 +68,7 @@ namespace :translations do
     key = ENV['KEY'] or raise "Parameter KEY must be given"
     ts = get_ts
     if ts.move key, ENV['TO']
-      save_files ts.moved, 'moved'
+      save_files ts.moved, 'moved', ts.separator
     else
       puts "The key \"#{key}\" was not found"
     end
@@ -78,7 +79,7 @@ namespace :translations do
     key = ENV['KEY'] or raise "Parameter KEY must be given"
     ts = get_ts
     if ts.remove key
-      save_files ts.moved, 'removed'
+      save_files ts.moved, 'removed', ts.separator
     else
       puts "The key \"#{key}\" was not found"
     end
