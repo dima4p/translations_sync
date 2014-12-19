@@ -40,8 +40,8 @@ There are two rake tasks implemented in the plugin.
 This task generates the files with missing translations in the directory
 config/locales. One file per a locale is created with the name missing_#{locale}.yml
 Each file contains the text of one of the existing locales, namely the first one
-existing. The order to check is defined by the LIST parameter. This parameter
-can also be used to add a new locale.
+existing. The order to check is defined by the LIST parameter.
+This parameter can also be used to add a new locale. If it is not given I18n.available_locales will be used.
 The parameter EXCLUDE may be used to extract one or more locales from the participation
 in the process. If any locale is mentioned in both lists, it will not participate in the
 calculation of the missing translations but it's value may be used in the sample

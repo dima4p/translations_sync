@@ -22,7 +22,6 @@ end
 class TranslationsSync
 
   attr_accessor :translations, :list
-  DEFAULT_LIST = 'ru,en'
   EXCLUDE_LIST = ''
   TAIL = '=TODO'
   PKORDER = {'zero' => 0, 'one' => 1, 'two' => 2, 'few' => 3, 'many' => 5, 'other' => 9}
@@ -57,7 +56,8 @@ class TranslationsSync
   def initialize(list = nil, exclude = nil, source = nil)
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     translations = I18n.backend.send :translations
-    @full_list = ((list || DEFAULT_LIST).split(',').map(&:to_sym) + translations.keys).uniq
+    @full_list = list ? list.split(',').map(&:to_sym) : I18n.available_locales
+    @full_list = @full_list.uniq
     exclude = (exclude || EXCLUDE_LIST).split(',').map(&:to_sym)
     @list = @full_list - exclude
     rules_key = %w[i18n.plural.rule pluralize].detect do |rule|
@@ -225,6 +225,8 @@ class TranslationsSync
       if value.is_a? Hash
         if (value.keys & [:one, :other]).size > 0
           insert_translation(dest, new, lang, value)
+        # we do not process gem faker
+        elsif prefix == [] and key.to_sym == :faker
         else
           flatten_keys lang, value, dest, new
         end
@@ -266,7 +268,7 @@ class TranslationsSync
         begin
           h[key.to_s] = val[lang].to_s + TAIL
         rescue
-          puts %Q(Can not assign to the key "#{key}")
+          puts %Q(Can not assign to the key "#{keys.inspect}" value "#{val[lang]} for language #{target}")
           raise
         end
       end
