@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'ya2yaml'
 require 'i18n'
+require 'active_support/hash_with_indifferent_access'
 
 class Hash
   def stringify_keys!
@@ -53,7 +54,16 @@ class TranslationsSync
     end
   end   # class << self
 
-  def initialize(list = nil, exclude = nil, source = nil)
+  def initialize(*args)
+    params = args.pop if args.last.is_a? Hash
+    params = (params || {}).with_indifferent_access
+    unless args.size == 0
+      list, exclude, source = agrs
+      puts 'Deprecation warning: a Hash should be used to pass paramteters'
+    end
+    list ||= params[:list]
+    exclude ||= params[:exclude]
+    source ||= params[:source]
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     translations = I18n.backend.send :translations
     @full_list = list ? list.split(',').map(&:to_sym) : I18n.available_locales

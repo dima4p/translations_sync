@@ -5,7 +5,11 @@ namespace :translations do
 
   def get_ts(skip_source = false)
     source = skip_source ? nil : ENV['SOURCE'] || ENV['IN']
-    TranslationsSync.new ENV['LIST'], ENV['EXCLUDE'], source
+    params = {}
+    params[:list] = ENV['LIST'] if ENV['LIST']
+    params[:exclude] = ENV['EXCLUDE'] if ENV['EXCLUDE']
+    params[:source] = ENV['SOURCE'] || ENV['IN'] unless skip_source
+    TranslationsSync.new params
   end
 
   def save_moved_files(ts, default_name)
