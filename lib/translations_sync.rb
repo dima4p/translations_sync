@@ -80,11 +80,10 @@ class TranslationsSync
     end
 
     if source
-      re = Regexp.new "\\/#{Regexp.escape source}(_|.)[a-z]{2}(-[A-Z]{2})?\\.(yml|rb)\\Z"
+      translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/#{Regexp.escape source}(?:(_|.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
       I18n.load_path.reject! do |path|
-        path !~ re
+        path !~ translations_path_re
       end
-      @separator = $1 == '.' ? '.' : '_'
       translations.each do |key, hash|
         hash.keys.each do |k|
           hash.delete(k) unless k == :pluralize
@@ -92,6 +91,12 @@ class TranslationsSync
       end
       I18n.backend.send(:init_translations)
     end
+
+    translations_path_re ||= Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/[-_0-9a-zA-Z]+(?:(_|.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
+    I18n.load_path.find do  |path|
+      path.match translations_path_re
+    end
+    @prefix = $1 or @separator = $2
 
     @flat = {}
     @list.each do |lang|
@@ -213,8 +218,16 @@ class TranslationsSync
     result
   end
 
-  def separator
-    @separator || '_'
+  def filename_for(name, lang = nil)
+    if lang
+      if @prefix
+        "#{translations_dir}/#{lang}/#{name}.yml"
+      else
+        "#{translations_dir}/#{name}#{@separator}#{lang}.yml"
+      end
+    else
+      "#{translations_dir}/#{name}.yml"
+    end
   end
 
   private
@@ -282,6 +295,22 @@ class TranslationsSync
       h[key.to_s] = value
     end
     keys.push key
+  end
+
+  def translations_dir
+    @translations_dir ||=
+        common_prefix(I18n.config.load_path.grep Regexp.new FileUtils.pwd)
+  end
+
+  def common_prefix(paths)
+    return '' if paths.empty?
+    return paths.first.split('/').slice(0...-1).join('/') if paths.length <= 1
+    arr = paths.sort
+    first = arr.first.split('/')
+    last = arr.last.split('/')
+    i = 0
+    i += 1 while first[i] == last[i] && i <= first.length
+    first.slice(0, i).join('/')
   end
 
 end

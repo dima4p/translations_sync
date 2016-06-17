@@ -1,3 +1,12 @@
+2016-06-17 v.0.4.6
+* The locale may be not only suffix, but also directory
+
+2014-12-19 v.0.4.5
+* Ignore gem faker and use I18n.available_locales as default list of locales
+
+2014-12-19 v.0.4.4
+* skipped
+
 2014-05-20 v.0.4.3
 * Dot can be used as separator between name and locale instead of underscore
 

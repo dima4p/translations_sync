@@ -6,7 +6,7 @@ require 'rubygems/specification'
 require 'date'
 
 GEM = "translations_sync"
-GEM_VERSION = "0.4.5"
+GEM_VERSION = "0.4.6"
 AUTHOR = "Dmitri Koulikoff"
 EMAIL = "koulikoff@gmail.com"
 HOMEPAGE = "http://github.com/dima4p/translations_sync/"
