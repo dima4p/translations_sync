@@ -1,74 +1,99 @@
 TranslationsSync
 ================
 
-This plugin is intended to help the developer to synchronize the different locales for
-the project that uses yaml based locales, in particular, I18n.
+This gem is intended to help the developer to synchronize the different
+locales for the project that uses yaml based locales, in particular, I18n.
 
 
 Requirements
-============
+------------
 
-gem 'ya2yaml'
-
+    gem 'ya2yaml'
+    gem 'active_support'
 
 Installation
-============
+------------
 
-1. As plugin
-  rails plugin install http://github.com/dima4p/translations_sync/
+1. Add to your Gemfile
 
-2. As gem: add to your Gemfile
-  gem 'translations_sync'
+    gem 'translations_sync'
 
-3. If you are using the gem outside rails, execute the following command to copy
-the rake file into your project's directory lib/tasks.
+2. If you are using the gem without bundle just install it
 
-  bundle exec translations_sync
+    gem install translations_sync
 
-Or, if you keep your rake tesks in other place, you can give the argument with the proper path
+Then execute the following command to copy the rake file into your
+project's directory lib/tasks.
 
-  bundle exec translations_sync path/to/directory
+    translations_sync
+
+Or, if you keep your rake tasks in other place, you can give the argument
+with the proper path
+
+    translations_sync path/to/directory
 
 
 Description
-===========
+-----------
 
-There are two rake tasks implemented in the plugin.
+This gem allows different organizations of translation files. They can be
+grouped in the directories that correspond to locales, or the locale
+may be defined in the suffix of a file name separated by a dot or underscore.
+Let us call the file name without locale suffix and extension as
+**base name**
 
-1. rake translations:sync
+When a file name is to be given as parameter in the description below
+it should not include nor locale prefix, nor locale suffix and extension
+whichever organization is used.
 
-This task generates the files with missing translations in the directory
-config/locales. One file per a locale is created with the name missing_#{locale}.yml
-Each file contains the text of one of the existing locales, namely the first one
-existing. The order to check is defined by the LIST parameter.
-This parameter can also be used to add a new locale. If it is not given I18n.available_locales will be used.
-The parameter EXCLUDE may be used to extract one or more locales from the participation
-in the process. If any locale is mentioned in both lists, it will not participate in the
-calculation of the missing translations but it's value may be used in the sample
-translation.
-The parameter NAME allows you to write the missing translations to the specified
-files instead of default 'missing'.
-The parameter SOURCE allows you to restrict the synchronization to be done within
-only one file name. Only the files for all the locales that meet the given name
-will be loaded for the synchronization.
-The parameter IN sets both NAME and SOURCE to its value.
+The main goal of the gem to assist in managing the translations for the
+project. This can be done by using the `rake` tasks described below.
 
-2. rake translations:singles
+The following parameters can be given:
+
+* `LIST=comma,separated,list` specifies the locales that should
+participate in synchronization.
+For example, `LIST=en,de,fr,zh-CN`
+If omitted, I18n.available_locales will be used.
+The order of the locales is important as the existing for the first
+locale in the list will be provided for a missing translation(s).
+The locale in LIST must not be present in I18n.available_locales.
+This allows easily to add new locales to the project.
+* `EXCLUDE=comma,separated,list` specifies the locales that should NOT participate.
+* `NAME=name`. By default missing translations are written to the
+**base name** "missing".
+This parameter tells to use the given name as **base name**.
+If any of the corresponding files exist, the missing translations will
+be added to them.
+* `SOURCE=name`. Only files with the given **base name** will be considered.
+* `IN=name`. It is equivalent to `NAME=name SOURCE=name`
+* `KEY=path.to.key`. Points to the key to be moved or removed.
+Obviously, it should not include locale.
+* `TO=path.to.key`.
+
+Rake tasks
+----------
+
+### rake translations:sync
+
+This task verifies that all the translation keys are present in all
+files specifed by the given parameters and if any is missing creates/updates
+corresponding file(s).
+
+### rake translations:singles
 
 This task generates a single file config/locales/singles.yml that contains the
-translations occuring only in one locale.
+translations occurring only in one locale.
 
-3. rake translations:move KEY=key.to.move TO=where.to.move
+### rake translations:move KEY=key.to.move TO=where.to.move
 
 This task moves the content of given KEY under the TO.
-You can use all the parameters available for the translations:sync task with the default
-value for the NAME equal to 'moved'.
+You can use all the parameters available for the translations:sync task
+with the default value for the NAME equal to 'moved'.
 
-4. rake translations:remove KEY=key.to.remove
+### rake translations:remove KEY=key.to.remove
 
-This task removes the key from the translations. NAME defalts to 'removed' here.
-
-So far it works only for rails applications. Suggestions for others are welcome.
+This task removes the key from the translations. NAME defaults to 'removed' here.
 
 
-Copyright (c) 2010-2011 Dmitri Koulikoff, released under the MIT license
+Copyright (c) 2010-2016 Dmitri Koulikoff, released under the MIT license

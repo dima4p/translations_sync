@@ -6,9 +6,10 @@ namespace :translations do
   def get_ts(skip_source = false)
     source = skip_source ? nil : ENV['SOURCE'] || ENV['IN']
     params = {}
-    params[:list] = ENV['LIST'] if ENV['LIST']
-    params[:exclude] = ENV['EXCLUDE'] if ENV['EXCLUDE']
+    params[:list] = ENV['LIST']
+    params[:exclude] = ENV['EXCLUDE']
     params[:source] = ENV['SOURCE'] || ENV['IN'] unless skip_source
+    params[:ignore] = ENV['IGNORE']
     TranslationsSync.new params
   end
 
@@ -70,8 +71,9 @@ namespace :translations do
   desc "Moves the key in the translations" + PARAMS + " KEY=key.to.move TO=where.to.move IN=filespec"
   task :move => :environment do
     key = ENV['KEY'] or raise "Parameter KEY must be given"
+    to  = ENV['TO']  or raise "Parameter TO must be given"
     ts = get_ts
-    if ts.move key, ENV['TO']
+    if ts.move key, to
       save_moved_files ts, 'moved'
     else
       puts "The key \"#{key}\" was not found"

@@ -1,3 +1,7 @@
+2016-06-17 v.0.4.7
+* Parameter IGNORE is added
+* Documentation is refised
+
 2016-06-17 v.0.4.6
 * The locale may be not only suffix, but also directory
 

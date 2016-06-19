@@ -3,7 +3,7 @@
 
 Gem::Specification.new do |s|
   s.name = "translations_sync"
-  s.version = "0.4.6"
+  s.version = "0.4.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
@@ -16,17 +16,20 @@ Gem::Specification.new do |s|
   s.files = ["Changelog", "MIT-LICENSE", "README", "Rakefile", "bin/translations_sync", "init.rb", "lib/tasks", "lib/tasks/translations_sync.rake", "lib/translations_sync.rb", "spec/spec_helper.rb"]
   s.homepage = "http://github.com/dima4p/translations_sync/"
   s.rubygems_version = "2.5.1"
-  s.summary = "Synchronizes the different locales represeinted in yaml for I18n"
+  s.summary = "Synchronizes the different locales translations represeinted in yaml for I18n"
 
   if s.respond_to? :specification_version then
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<ya2yaml>, [">= 0"])
+      s.add_runtime_dependency 'activesupport'
+      s.add_runtime_dependency 'ya2yaml'
     else
-      s.add_dependency(%q<ya2yaml>, [">= 0"])
+      s.add_dependency 'activesupport'
+      s.add_dependency 'ya2yaml'
     end
   else
-    s.add_dependency(%q<ya2yaml>, [">= 0"])
+    s.add_dependency 'activesupport'
+    s.add_dependency 'ya2yaml'
   end
 end

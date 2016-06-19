@@ -23,6 +23,7 @@ end
 class TranslationsSync
 
   attr_accessor :translations, :list
+  attr_reader :flat
   EXCLUDE_LIST = ''
   TAIL = '=TODO'
   PKORDER = {'zero' => 0, 'one' => 1, 'two' => 2, 'few' => 3, 'many' => 5, 'other' => 9}
@@ -64,8 +65,7 @@ class TranslationsSync
     list ||= params[:list]
     exclude ||= params[:exclude]
     source ||= params[:source]
-    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
-    translations = I18n.backend.send :translations
+    ignore = params[:ignore]
     @full_list = list ? list.split(',').map(&:to_sym) : I18n.available_locales
     @full_list = @full_list.uniq
     exclude = (exclude || EXCLUDE_LIST).split(',').map(&:to_sym)
@@ -89,25 +89,29 @@ class TranslationsSync
       acc
     end
 
-    if source
-      translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/#{Regexp.escape source}(?:(_|.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
-      I18n.load_path.reject! do |path|
-        path !~ translations_path_re
-      end
-      translations.each do |key, hash|
-        hash.keys.each do |k|
-          hash.delete(k) unless k == :pluralize
-        end
-      end
-      I18n.backend.send(:init_translations)
-    end
-
-    translations_path_re ||= Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/[-_0-9a-zA-Z]+(?:(_|.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
+    translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/[-_/0-9a-zA-Z]+(?:(_|.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
     I18n.load_path.find do  |path|
       path.match translations_path_re
     end
     @prefix = $1 or @separator = $2
 
+    if source
+      translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/#{Regexp.escape source}(?:(_|.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
+      I18n.load_path.reject! do |path|
+        path !~ translations_path_re
+      end
+    end
+
+    if ignore
+      translations_path_re = Regexp.new "#{translations_dir}#{'\\/[^/]+' if @prefix}\\/#{Regexp.escape ignore}"
+      I18n.load_path.reject! do |path|
+        path =~ translations_path_re
+      end
+    end
+
+    I18n.reload!
+    I18n.backend.send(:init_translations)
+    translations = I18n.backend.send :translations
     @flat = {}
     @list.each do |lang|
       flatten_keys(lang, translations[lang] || {}, @flat)
@@ -123,7 +127,7 @@ class TranslationsSync
     unless @locales_with_missing
       size = list.size
       @locales_with_missing = []
-      @flat.each_pair do |key, val|
+      flat.each_pair do |key, val|
         if val.size < size
           (@locales_with_missing += list - val.keys).uniq!
           break if @locales_with_missing.size == size
@@ -139,7 +143,7 @@ class TranslationsSync
       locales_with_missing.each do |lang|
         @missing[lang] = {}
       end
-      @flat.each_pair do |key, val|
+      flat.each_pair do |key, val|
         (locales_with_missing - val.keys).each do |lang|
           push_to_hash @missing[lang], lang, key, val, :missing
         end
@@ -153,7 +157,7 @@ class TranslationsSync
     unless @locales_with_singles
       size = list.size
       @locales_with_singles = []
-      @flat.each_pair do |key, val|
+      flat.each_pair do |key, val|
         if val.size < size
           (@locales_with_singles += val.keys).uniq! if val.size == 1
           break if @locales_with_singles.size == size
@@ -169,7 +173,7 @@ class TranslationsSync
       locales_with_singles.each do |lang|
         @singles[lang] = {}
       end
-      @flat.each_pair do |key, val|
+      flat.each_pair do |key, val|
         lang = val.keys.first
         push_to_hash @singles[lang], lang, key, val, :singles if val.size == 1
       end
@@ -185,14 +189,17 @@ class TranslationsSync
     destination ||= ''
     destination = destination.split('.').map(&:to_sym)
     destination << key.last if destination.size == 0
+    puts "key=#{key.inspect} destination=#{destination.inspect}"
     result = false
-    @flat.each_pair do |array, val|
+    flat.each_pair do |array, val|
       if array[0, key_length] == key
         array[0, key_length] = destination
+        puts array.inspect
         result = true
       end
     end
     @moved = nil
+    puts result
     result
   end
 
@@ -202,7 +209,8 @@ class TranslationsSync
       @list.each do |lang|
         @moved[lang] = {}
       end
-      @flat.each_pair do |key, val|
+      flat.each_pair do |key, val|
+        puts key.inspect
         val.keys.each do |lang|
           push_to_hash @moved[lang], lang, key, val, :moved
         end
@@ -219,7 +227,7 @@ class TranslationsSync
     key = key.split('.').map(&:to_sym)
     key_length = key.length
     result = false
-    @flat.reject! do |array, val|
+    flat.reject! do |array, val|
       r = array[0, key_length] == key
       result ||= r
       r
@@ -300,7 +308,8 @@ class TranslationsSync
       value.stringify_keys! if value.is_a? Hash
       h[key.to_s] = value
     when :moved
-      value = val[target] or raise 'The translations are not synchronized'
+      value = val[target]
+      raise "The translations are not synchronized for #{keys.inspect}" if value.nil?
       value.stringify_keys! if value.is_a? Hash
       h[key.to_s] = value
     end
