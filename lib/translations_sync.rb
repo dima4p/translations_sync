@@ -89,14 +89,14 @@ class TranslationsSync
       acc
     end
 
-    translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/[-_/0-9a-zA-Z]+(?:(_|.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
+    translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/[-_/0-9a-zA-Z]+(?:(_|.)[a-z]{2}(?:-[A-Z]{2})?)\\.(?:yml|rb)\\Z"
     I18n.load_path.find do  |path|
       path.match translations_path_re
     end
     @prefix = $1 or @separator = $2
 
     if source
-      translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/#{Regexp.escape source}(?:(_|.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
+      translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/#{Regexp.escape source}(?:(_|.)[a-z]{2}(?:-[A-Z]{2})?)\\.(?:yml|rb)\\Z"
       I18n.load_path.reject! do |path|
         path !~ translations_path_re
       end
@@ -128,8 +128,9 @@ class TranslationsSync
       size = list.size
       @locales_with_missing = []
       flat.each_pair do |key, val|
-        if val.size < size
-          (@locales_with_missing += list - val.keys).uniq!
+        v = val.reject{|k, v| v.nil?}
+        if v.size < size
+          (@locales_with_missing += list - v.keys).uniq!
           break if @locales_with_missing.size == size
         end
       end
@@ -189,17 +190,14 @@ class TranslationsSync
     destination ||= ''
     destination = destination.split('.').map(&:to_sym)
     destination << key.last if destination.size == 0
-    puts "key=#{key.inspect} destination=#{destination.inspect}"
     result = false
     flat.each_pair do |array, val|
       if array[0, key_length] == key
         array[0, key_length] = destination
-        puts array.inspect
         result = true
       end
     end
     @moved = nil
-    puts result
     result
   end
 
@@ -210,7 +208,6 @@ class TranslationsSync
         @moved[lang] = {}
       end
       flat.each_pair do |key, val|
-        puts key.inspect
         val.keys.each do |lang|
           push_to_hash @moved[lang], lang, key, val, :moved
         end
@@ -299,8 +296,7 @@ class TranslationsSync
         begin
           h[key.to_s] = val[lang].to_s + TAIL
         rescue
-          puts %Q(Can not assign to the key "#{keys.inspect}" value "#{val[lang]} for language #{target}")
-          raise
+          raise %Q(Can not assign to the key "#{keys.inspect}" value "#{val[lang]} for language #{target}")
         end
       end
     when :singles
@@ -309,7 +305,7 @@ class TranslationsSync
       h[key.to_s] = value
     when :moved
       value = val[target]
-      raise "The translations are not synchronized for #{keys.inspect}" if value.nil?
+      raise "The translations are not synchronized for \"#{target}\" at \"#{(keys + [key]).map(&:to_s).join '>'}\"" if value.nil?
       value.stringify_keys! if value.is_a? Hash
       h[key.to_s] = value
     end

@@ -1,4 +1,10 @@
-2016-06-17 v.0.4.7
+2016-09-20 v.0.4.9
+* Regex fixed
+
+2016-06-19 v.0.4.8
+* Diagnostics is improved
+
+2016-06-18 v.0.4.7
 * Parameter IGNORE is added
 * Documentation is refised
 
