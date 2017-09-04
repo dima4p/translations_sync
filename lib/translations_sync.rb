@@ -89,22 +89,24 @@ class TranslationsSync
       acc
     end
 
-    translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/[-_/0-9a-zA-Z]+(?:(_|.)[a-z]{2}(?:-[A-Z]{2})?)\\.(?:yml|rb)\\Z"
+    translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/[-_/0-9a-zA-Z]+(?:(_|\\.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
     I18n.load_path.find do  |path|
       path.match translations_path_re
     end
     @prefix = $1 or @separator = $2
 
     if source
-      translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/#{Regexp.escape source}(?:(_|.)[a-z]{2}(?:-[A-Z]{2})?)\\.(?:yml|rb)\\Z"
+      translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/#{Regexp.escape source}(?:(_|\\.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
       I18n.load_path.reject! do |path|
         path !~ translations_path_re
       end
     end
 
+	puts ignore.inspect
     if ignore
       translations_path_re = Regexp.new "#{translations_dir}#{'\\/[^/]+' if @prefix}\\/#{Regexp.escape ignore}"
       I18n.load_path.reject! do |path|
+        puts "#{path} #{(path !~ translations_path_re).inspect}"
         path =~ translations_path_re
       end
     end
