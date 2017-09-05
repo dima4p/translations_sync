@@ -102,11 +102,9 @@ class TranslationsSync
       end
     end
 
-	puts ignore.inspect
     if ignore
       translations_path_re = Regexp.new "#{translations_dir}#{'\\/[^/]+' if @prefix}\\/#{Regexp.escape ignore}"
       I18n.load_path.reject! do |path|
-        puts "#{path} #{(path !~ translations_path_re).inspect}"
         path =~ translations_path_re
       end
     end
