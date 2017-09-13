@@ -66,6 +66,8 @@ This parameter tells to use the given name as **base name**.
 If any of the corresponding files exist, the missing translations will
 be added to them.
 * `SOURCE=name`. Only files with the given **base name** will be considered.
+* `GEMS=list`. When `SOURCE` is in effect additionally the translations from
+the listed gems will be included.
 * `IN=name`. It is equivalent to `NAME=name SOURCE=name`
 * `KEY=path.to.key`. Points to the key to be moved or removed.
 Obviously, it should not include locale.

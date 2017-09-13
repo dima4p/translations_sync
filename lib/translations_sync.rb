@@ -97,8 +97,11 @@ class TranslationsSync
 
     if source
       translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/#{Regexp.escape source}(?:(_|\\.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
-      I18n.load_path.reject! do |path|
-        path !~ translations_path_re
+      gems = params[:gems].to_s.split(',')
+      I18n.load_path.select! do |path|
+        gem = gems.detect{|gem| path =~ /gems\/#{gem}/}
+        puts "#{path}" if gem
+        gem or path =~ translations_path_re
       end
     end
 
@@ -148,6 +151,9 @@ class TranslationsSync
         (locales_with_missing - val.keys).each do |lang|
           push_to_hash @missing[lang], lang, key, val, :missing
         end
+      end
+      locales_with_missing.each do |lang|
+        @missing.delete lang if @missing[lang] == {}
       end
       @missing.stringify_keys!
     end

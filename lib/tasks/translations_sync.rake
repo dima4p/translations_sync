@@ -10,6 +10,7 @@ namespace :translations do
     params[:exclude] = ENV['EXCLUDE']
     params[:source] = ENV['SOURCE'] || ENV['IN'] unless skip_source
     params[:ignore] = ENV['IGNORE']
+    params[:gems] = ENV['GEMS']
     TranslationsSync.new params
   end
 
