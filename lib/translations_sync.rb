@@ -89,8 +89,8 @@ class TranslationsSync
       acc
     end
 
-    translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/[-_/0-9a-zA-Z]+(?:(_|\\.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
-    I18n.load_path.find do  |path|
+    translations_path_re = Regexp.new "#{translations_dir}(\\/[a-z]{2}(?:-[A-Z]{2})?)?\\/[-_/0-9a-zA-Z]+?(?:(_|\\.)[a-z]{2}(?:-[A-Z]{2})?)?\\.(?:yml|rb)\\Z"
+    I18n.load_path.find do |path|
       path.match translations_path_re
     end
     @prefix = $1 or @separator = $2
