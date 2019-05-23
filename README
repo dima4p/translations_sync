@@ -22,16 +22,6 @@ Installation
 
     gem install translations_sync
 
-Then execute the following command to copy the rake file into your
-project's directory lib/tasks.
-
-    translations_sync
-
-Or, if you keep your rake tasks in other place, you can give the argument
-with the proper path
-
-    translations_sync path/to/directory
-
 
 Description
 -----------
